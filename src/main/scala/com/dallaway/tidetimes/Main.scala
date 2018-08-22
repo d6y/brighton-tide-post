@@ -40,8 +40,6 @@ object Post {
 
   def main(args: Array[String]): Unit = {
 
-    // TODO: validate environment vars
-
     val now = Instant.now()
 
     val post = nextTides(now) match {
@@ -59,6 +57,12 @@ object Post {
     }
 
     println(post)
+
+    import ciris.{env, Secret}
+    env[Secret[String]]("MASTODON_ACCESS_TOKEN").sourceValue.foreach { token =>
+      val client = Mastodon(token)
+      client.post(post)
+    }
 
   }
 

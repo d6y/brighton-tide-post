@@ -2,10 +2,13 @@ name := "brighton-tide-post"
 
 scalaVersion := "2.12.6"
 
+val cirisVersion = "0.10.2"
+
 libraryDependencies ++= Seq(
   "com.gu" %% "scanamo" % "1.0.0-M7",
   "org.typelevel" %% "cats-core" % "1.2.0",
   "com.softwaremill.sttp" %% "core" % "1.3.0",
+  "is.cir" %% "ciris-core" % cirisVersion,
 )
 
 scalacOptions := Seq(
