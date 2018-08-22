@@ -29,14 +29,14 @@ import cats.implicits._
 object Post {
 
   def nextTides(at: Instant): Either[Error, List[TideRow]] = {
-    val mixedTidesAndErrors: List[Either[Error, TideRow]] = Amazon.fetchTides(at)
+    val mixedTidesAndErrors: List[Either[Error, TideRow]] =
+      Amazon.fetchTides(at)
     val tides: Either[Error, List[TideRow]] = mixedTidesAndErrors.sequence
     tides.map(ts => ts.sortBy(_.instant))
   }
 
   implicit val tideShow: Show[TideRow] = t =>
     s"${t.dow} ${t.time24} (${t.height.value}m)"
-
 
   def main(args: Array[String]): Unit = {
 
@@ -45,13 +45,17 @@ object Post {
     val now = Instant.now()
 
     val post = nextTides(now) match {
-      case Left(err)  =>
+      case Left(err) =>
         Console.err.println(err)
         "Problem fetching the tide times. @d6y please help!"
       case Right(Nil) =>
         "Could not find tides. @d6y help!"
       case Right(tide :: Nil) => s"Next low tide is: ${tide.show}"
-      case Right(tides) => s"""Next low tides are:\n\n- ${tides.take(2).map(_.show).mkString("\n- ")}"""
+      case Right(tides) =>
+        s"""Next low tides are:\n\n- ${tides
+          .take(2)
+          .map(_.show)
+          .mkString("\n- ")}"""
     }
 
     println(post)

@@ -57,12 +57,11 @@ object Amazon {
     val table = Table[TideRow]("brighton-tide")
     val low: HighOrLow = Low
     val ops = table.filter('instant >= at and ('highOrLow -> low)).scan()
-        Scanamo.exec(client)(ops).toList.collect { convertDynamoErrsIntoError }
-    }
+    Scanamo.exec(client)(ops).toList.collect { convertDynamoErrsIntoError }
+  }
 
   private val convertDynamoErrsIntoError = {
     case Left(err) => Left(Error(err.toString))
     case Right(tide) => Right(tide)
-  } : PartialFunction[Either[DynamoReadError,TideRow], Either[Error,TideRow]]
+  }: PartialFunction[Either[DynamoReadError, TideRow], Either[Error, TideRow]]
 }
-
