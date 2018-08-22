@@ -1,33 +1,60 @@
 package com.dallaway.tidetimes
 
-import java.time.{Instant, LocalDate, ZoneOffset}
+/*
+  Copyright 2009-2018 Richard Dallaway
 
-import scala.util.{Failure, Success, Try}
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-case class TideRow(
-    instant: Instant,
-    height: Metre,
-    highOrLow: HighOrLow,
-    dow: String, // E.g., "Sunday"
-    date: String, // E.g., "2017-12-25"
-    time12: String, // E.g., "02:15"
-    time24: String, // E.g., "2:15 AM",
-    source: String // E.g., "EASYTIDE"
-)
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
+import java.time.Instant
 
 // Environment vars needed:
 // AWS_ACCESS_KEY_ID
 // AWS_SECRET_ACCESS_KEY
+// MASTODON_ACCESS_TOKEN
+
+import cats.Show
+import cats.implicits._
 
 object Post {
 
+  def nextTides(at: Instant): Either[Error, List[TideRow]] = {
+    val mixedTidesAndErrors: List[Either[Error, TideRow]] = Amazon.fetchTides(at)
+    val tides: Either[Error, List[TideRow]] = mixedTidesAndErrors.sequence
+    tides.map(ts => ts.sortBy(_.instant))
+  }
+
+  implicit val tideShow: Show[TideRow] = t =>
+    s"${t.dow} ${t.time24} (${t.height.value}m)"
+
+
   def main(args: Array[String]): Unit = {
 
-    import scala.concurrent.Await
-    import scala.concurrent.duration._
-    import scala.concurrent.ExecutionContext.Implicits.global
+    // TODO: validate environment vars
 
-    val now = LocalDate.now
+    val now = Instant.now()
+
+    val post = nextTides(now) match {
+      case Left(err)  =>
+        Console.err.println(err)
+        "Problem fetching the tide times. @d6y please help!"
+      case Right(Nil) =>
+        "Could not find tides. @d6y help!"
+      case Right(tide :: Nil) => s"Next low tide is: ${tide.show}"
+      case Right(tides) => s"""Next low tides are:\n\n- ${tides.take(2).map(_.show).mkString("\n- ")}"""
+    }
+
+    println(post)
 
   }
 

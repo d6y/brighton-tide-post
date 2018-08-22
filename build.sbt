@@ -4,8 +4,8 @@ scalaVersion := "2.12.6"
 
 libraryDependencies ++= Seq(
   "com.gu" %% "scanamo" % "1.0.0-M6",
-  "org.typelevel" %% "cats-core" % "1.0.0",
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+  "org.typelevel" %% "cats-core" % "1.2.0",
+  "com.softwaremill.sttp" %% "core" % "1.3.0",
 )
 
 scalacOptions := Seq(
