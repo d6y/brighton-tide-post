@@ -51,7 +51,7 @@ object Post {
       case Right(tide :: Nil) => s"Next low tide is: ${tide.show}"
       case Right(tides) =>
         s"""Next low tides are:\n\n- ${tides
-          .take(2)
+          .take(3)
           .map(_.show)
           .mkString("\n- ")}"""
     }

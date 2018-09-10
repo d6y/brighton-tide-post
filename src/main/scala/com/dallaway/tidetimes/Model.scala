@@ -35,8 +35,8 @@ case class TideRow(
     highOrLow: HighOrLow,
     dow: String, // E.g., "Sunday"
     date: String, // E.g., "2017-12-25"
-    time12: String, // E.g., "02:15"
-    time24: String, // E.g., "2:15 AM",
+    time12: String, // E.g., "2:15 AM"
+    time24: String, // E.g., "02:15"
     source: String // E.g., "EASYTIDE"
 )
 
