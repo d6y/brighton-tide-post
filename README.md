@@ -14,6 +14,7 @@ See also:
 - [Brighton Tide on Twitter](https://twitter.com/brightontide)
 - [Brighton Tide on Google Home](https://assistant.google.com/services/a/uid/000000139c4246a6?hl=en-GB)
 - A partial implementation [in Rust](https://gitlab.com/d6y/brightontide-post).
+- Data gathering [via close source](https://gitlab.com/d6y/brighton-tide-gather).
 
 # Running this code
 
