@@ -21,7 +21,13 @@ import java.time.Instant
 // Environment vars needed:
 // AWS_ACCESS_KEY_ID
 // AWS_SECRET_ACCESS_KEY
+
 // MASTODON_ACCESS_TOKEN
+
+// TWIT_CONSUMER_KEY
+// TWIT_TOKEN_VALUE
+// TWIT_CONSUMER_SECRET
+// TWIT_ACCESS_TOKEN
 
 import cats.Show
 import cats.implicits._
@@ -58,12 +64,23 @@ object Post {
 
     println(post)
 
-    import ciris.{env, Secret}
-    env[Secret[String]]("MASTODON_ACCESS_TOKEN").sourceValue.foreach { token =>
-      val client = Mastodon(token)
+    // TODO: the client.post methods should be value returning, so we can inspect results and log failures
+
+    import ciris.{loadConfig, env}
+    loadConfig(env[String]("MASTODON_ACCESS_TOKEN")) {  Mastodon.apply }
+    .foreach { client =>
       client.post(post)
     }
 
+    loadConfig(
+      env[String]("TWIT_CONSUMER_KEY"),
+      env[String]("TWIT_TOKEN_VALUE"),
+      env[String]("TWIT_CONSUMER_SECRET"),
+      env[String]("TWIT_ACCESS_TOKEN")) { Twitter.apply }.foreach { client =>
+        client.post(post)
+      }
+    
+    
   }
 
 }

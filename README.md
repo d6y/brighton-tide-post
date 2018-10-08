@@ -5,6 +5,7 @@ Posts the latest Brighton Tide low tides to social media. Intended to replace [b
 Currently implemented: 
 
 - [x] Mastodon
+- [x] Twitter
 
 See also:
 
@@ -12,6 +13,7 @@ See also:
 - [Brighton Tide on Mastodon](https://mastodon.social/web/accounts/482847)
 - [Brighton Tide on Twitter](https://twitter.com/brightontide)
 - [Brighton Tide on Google Home](https://assistant.google.com/services/a/uid/000000139c4246a6?hl=en-GB)
+- A partial implementation [in Rust](https://gitlab.com/d6y/brightontide-post).
 
 # Running this code
 
@@ -25,3 +27,6 @@ sbt> run
 ```
 
 ...without the `MASTODON_ACCESS_TOKEN` the post text will be printed only.
+
+To include a post to Twitter, run with the environment variables of:
+`TWIT_CONSUMER_KEY`, `TWIT_TOKEN_VALUE`, `TWIT_CONSUMER_SECRET`, `TWIT_ACCESS_TOKEN`.
