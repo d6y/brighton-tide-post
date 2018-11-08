@@ -17,6 +17,7 @@ package com.dallaway.tidetimes
  */
 
 import java.time.Instant
+import java.time.temporal.ChronoUnit.HOURS
 import cats.Show
 import cats.implicits._
 import scala.collection.SortedSet
@@ -59,7 +60,22 @@ object Post {
     tides.map(ts => uniqueTides(ts.to[SortedSet]))
   }
 
-  def uniqueTides(tides: SortedSet[TideRow]): SortedSet[TideRow] = tides
+  def uniqueTides(tides: SortedSet[TideRow]): SortedSet[TideRow] = {
+
+    def withinThreeHours(first: TideRow, second: TideRow): Boolean =
+      !first.instant.isBefore(second.instant.minus(3L, HOURS))
+
+    // Drop tides that are < 3 hours from the latest accepted tide on the accumulator:
+    def dt(xs: List[TideRow], acc: List[TideRow]): List[TideRow] =
+      (xs, acc) match {
+        case (Nil, _) => acc.reverse
+        case (x :: xs, Nil) => dt(xs, List(x))
+        case (x :: xs, y :: ys) if withinThreeHours(y, x) => dt(xs, acc)
+        case (x :: xs, _) => dt(xs, x :: acc)
+      }
+
+    dt(tides.toList, Nil).to[SortedSet]
+  }
 
   def main(args: Array[String]): Unit = {
 
