@@ -17,70 +17,72 @@ package com.dallaway.tidetimes
  */
 
 import java.time.Instant
-
-// Environment vars needed:
-// AWS_ACCESS_KEY_ID
-// AWS_SECRET_ACCESS_KEY
-
-// MASTODON_ACCESS_TOKEN
-
-// TWIT_CONSUMER_KEY
-// TWIT_TOKEN_VALUE
-// TWIT_CONSUMER_SECRET
-// TWIT_ACCESS_TOKEN
-
 import cats.Show
 import cats.implicits._
+import scala.collection.SortedSet
 
-object Post {
-
-  def nextTides(at: Instant): Either[Error, List[TideRow]] = {
-    val mixedTidesAndErrors: List[Either[Error, TideRow]] =
-      Amazon.fetchTides(at)
-    val tides: Either[Error, List[TideRow]] = mixedTidesAndErrors.sequence
-    tides.map(ts => ts.sortBy(_.instant))
-  }
+object English {
 
   implicit val tideShow: Show[TideRow] = t =>
     s"${t.dow} ${t.time24} (${t.height.value}m)"
 
+  def help(err: Error): String = {
+    Console.err.println(err)
+    "Problem fetching the tide times. @d6y please help!"
+  }
+
+  def text(tides: SortedSet[TideRow]): String = tides.toSeq match {
+
+    case Seq() =>
+      "Could not find tides. @d6y help!"
+
+    case Seq(tide) => s"Next low tide is: ${tide.show}"
+
+    case tides =>
+      val text = tides
+        .take(3)
+        .map(_.show)
+        .mkString("\n- ")
+      s"""Next low tides are:\n\n- $text"""
+  }
+}
+
+object Post {
+
+  implicit val tideOrder: Ordering[TideRow] = (a, b) =>
+    a.instant.getEpochSecond() compare b.instant.getEpochSecond()
+
+  def nextTides(at: Instant): Either[Error, SortedSet[TideRow]] = {
+    val mixedTidesAndErrors: List[Either[Error, TideRow]] =
+      Amazon.fetchTides(at)
+    val tides: Either[Error, List[TideRow]] = mixedTidesAndErrors.sequence
+    tides.map(ts => uniqueTides(ts.to[SortedSet]))
+  }
+
+  def uniqueTides(tides: SortedSet[TideRow]): SortedSet[TideRow] = tides
+
   def main(args: Array[String]): Unit = {
 
     val now = Instant.now()
-
-    val post = nextTides(now) match {
-      case Left(err) =>
-        Console.err.println(err)
-        "Problem fetching the tide times. @d6y please help!"
-      case Right(Nil) =>
-        "Could not find tides. @d6y help!"
-      case Right(tide :: Nil) => s"Next low tide is: ${tide.show}"
-      case Right(tides) =>
-        s"""Next low tides are:\n\n- ${tides
-          .take(3)
-          .map(_.show)
-          .mkString("\n- ")}"""
-    }
-
-    println(post)
+    val message = nextTides(now).fold(English.help, English.text)
+    println(message)
 
     // TODO: the client.post methods should be value returning, so we can inspect results and log failures
 
     import ciris.{loadConfig, env}
-    loadConfig(env[String]("MASTODON_ACCESS_TOKEN")) {  Mastodon.apply }
-    .foreach { client =>
-      client.post(post)
-    }
+    loadConfig(env[String]("MASTODON_ACCESS_TOKEN")) { Mastodon.apply }
+      .foreach { client =>
+        client.post(message)
+      }
 
     loadConfig(
       env[String]("TWIT_CONSUMER_KEY"),
       env[String]("TWIT_TOKEN_VALUE"),
       env[String]("TWIT_CONSUMER_SECRET"),
       env[String]("TWIT_ACCESS_TOKEN")) { Twitter.apply }.foreach { client =>
-        client.post(post)
-      }
-    
-    
+      client.post(message)
+    }
+
   }
 
 }

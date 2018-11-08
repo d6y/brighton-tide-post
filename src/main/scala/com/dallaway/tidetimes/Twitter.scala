@@ -16,17 +16,22 @@ package com.dallaway.tidetimes
    limitations under the License.
  */
 
-case class Twitter(consumer_key: String, token_value: String, consumer_secret: String, access_token_secret: String) {
+case class Twitter(
+    consumer_key: String,
+    token_value: String,
+    consumer_secret: String,
+    access_token_secret: String) {
 
-   import twitter4j.TwitterFactory
-   import twitter4j.auth.AccessToken
-   import scala.util.Try
+  import twitter4j.TwitterFactory
+  import twitter4j.auth.AccessToken
+  import scala.util.Try
 
   def post(msg: String): Unit = {
-      val twitter = TwitterFactory.getSingleton
-      twitter.setOAuthConsumer(consumer_key, consumer_secret)
-      twitter.setOAuthAccessToken(new AccessToken(token_value, access_token_secret))
-      val status = Try(twitter.updateStatus(msg))
-      println(status.map(_.getText))
+    val twitter = TwitterFactory.getSingleton
+    twitter.setOAuthConsumer(consumer_key, consumer_secret)
+    twitter.setOAuthAccessToken(
+      new AccessToken(token_value, access_token_secret))
+    val status = Try(twitter.updateStatus(msg))
+    println(status.map(_.getText))
   }
 }

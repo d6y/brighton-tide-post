@@ -16,7 +16,7 @@ See also:
 - A partial implementation [in Rust](https://gitlab.com/d6y/brightontide-post).
 - Data gathering [via close source](https://gitlab.com/d6y/brighton-tide-gather).
 - Google Home code is [closed source](https://gitlab.com/d6y/brighton-tide-home-firebase).
-- Alexa code is [closed source])https://gitlab.com/d6y/brighton-tide-skill).
+- Alexa code is [closed source](https://gitlab.com/d6y/brighton-tide-skill).
 
 # Running this code
 
