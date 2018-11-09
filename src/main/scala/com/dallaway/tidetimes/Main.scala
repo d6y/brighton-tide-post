@@ -44,7 +44,7 @@ object English {
         .take(3)
         .map(_.show)
         .mkString("\n- ")
-      s"""Next low tides are:\n\n- $text"""
+      s"Next low tides are:\n\n- $text"
   }
 }
 
@@ -70,11 +70,12 @@ object Post {
       (xs, acc) match {
         case (Nil, _) => acc.reverse
         case (x :: xs, Nil) => dt(xs, List(x))
-        case (x :: xs, y :: ys) if withinThreeHours(y, x) => dt(xs, acc)
+        case (x :: xs, a :: as) if withinThreeHours(a, x) =>
+          dt(xs, acc) // the case where we drop a tide (x)
         case (x :: xs, _) => dt(xs, x :: acc)
       }
 
-    dt(tides.toList, Nil).to[SortedSet]
+    dt(tides.to[List], Nil).to[SortedSet]
   }
 
   def main(args: Array[String]): Unit = {

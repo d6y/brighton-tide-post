@@ -16,7 +16,7 @@ package com.dallaway.tidetimes
    limitations under the License.
  */
 
-import java.time.{Instant, LocalDateTime}
+import java.time.Instant
 
 sealed trait HighOrLow
 case object Low extends HighOrLow
@@ -27,7 +27,6 @@ case object EasyTide extends DataSource
 case object VisitBrighton extends DataSource
 
 case class Metre(value: Double) extends AnyVal
-case class Tide(gmt: LocalDateTime, height: Metre, highOrLow: HighOrLow)
 
 case class TideRow(
     instant: Instant,

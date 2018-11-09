@@ -19,7 +19,7 @@ package com.dallaway.tidetimes
 import org.scalatest._
 abstract class Spec extends FreeSpec with Matchers
 
-class PlausibleTidesSpect extends Spec {
+class PlausibleTidesSpec extends Spec {
 
   import java.time.Instant
   import scala.collection.SortedSet
