@@ -2,6 +2,8 @@ name := "brighton-tide-post"
 
 scalaVersion := "2.12.8"
 
+mainClass in assembly := Some("com.dallaway.tidetimes.Post")
+
 val cirisVersion = "0.11"
 
 libraryDependencies ++= Seq(
