@@ -87,16 +87,15 @@ object Post {
     // TODO: the client.post methods should be value returning, so we can inspect results and log failures
 
     import ciris.{loadConfig, env}
-    loadConfig(env[String]("MASTODON_ACCESS_TOKEN")) { Mastodon.apply }
-      .foreach { client =>
-        client.post(message)
-      }
+    loadConfig(env[String]("MASTODON_ACCESS_TOKEN"))(Mastodon.apply).foreach { client =>
+      client.post(message)
+    }
 
     loadConfig(
       env[String]("TWIT_CONSUMER_KEY"),
       env[String]("TWIT_TOKEN_VALUE"),
       env[String]("TWIT_CONSUMER_SECRET"),
-      env[String]("TWIT_ACCESS_TOKEN")) { Twitter.apply }.foreach { client =>
+      env[String]("TWIT_ACCESS_TOKEN"))(Twitter.apply).foreach { client =>
       client.post(message)
     }
 
