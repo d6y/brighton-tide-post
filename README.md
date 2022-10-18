@@ -23,7 +23,6 @@ See also:
 The data is stored in DynamoDB. You'll need a Dynamo table and tokens set to read from the table.
 The table format is as per the `TideRow` case class in this code base.
 
-
 ```
 MASTODON_ACCESS_TOKEN=aaa AWS_ACCESS_KEY_ID=bbb AWS_SECRET_ACCESS_KEY=ccc sbt
 sbt> run
@@ -33,3 +32,11 @@ sbt> run
 
 To include a post to Twitter, run with the environment variables of:
 `TWIT_CONSUMER_KEY`, `TWIT_TOKEN_VALUE`, `TWIT_CONSUMER_SECRET`, `TWIT_ACCESS_TOKEN`.
+
+# Build and run using Docker
+
+```
+docker build -t tide-post .
+docker run -it --rm --name running-post tide-post
+```
+
